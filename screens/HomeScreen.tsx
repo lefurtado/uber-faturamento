@@ -2,49 +2,39 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useState } from 'react';
 import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native';
 
-import {
-  runFirebaseSmokeTest,
-  signOutSmokeUser,
-  type SmokeTestResult,
-} from '../services/firebaseSmokeTest';
-import type { RootStackParamList } from '../types/navigation';
+import { useAuth } from '../contexts/AuthContext';
+import { mapAuthError } from '../services/auth';
+import type { AppStackParamList } from '../types/navigation';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+type Props = NativeStackScreenProps<AppStackParamList, 'Home'>;
 
 export function HomeScreen({ navigation }: Props) {
+  const { user, logOut } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<SmokeTestResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  async function handleSmokeTest() {
+  async function handleLogout() {
     setLoading(true);
-    setResult(null);
-    const next = await runFirebaseSmokeTest();
-    setResult(next);
-    setLoading(false);
-  }
+    setError(null);
 
-  async function handleSignOut() {
-    setLoading(true);
-    const next = await signOutSmokeUser();
-    setResult(next);
-    setLoading(false);
+    try {
+      await logOut();
+    } catch (err) {
+      setError(mapAuthError(err));
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Uber Faturamento</Text>
       <Text style={styles.subtitle}>Tela inicial (placeholder)</Text>
+      {user?.email ? <Text style={styles.email}>{user.email}</Text> : null}
       <Button title="Ir para Detalhes" onPress={() => navigation.navigate('Details')} />
-
-      <View style={styles.smokeBox}>
-        <Text style={styles.smokeTitle}>Smoke test Firebase (temporário)</Text>
-        <Button title="Rodar auth + Firestore" onPress={handleSmokeTest} disabled={loading} />
-        <Button title="Logout" onPress={handleSignOut} disabled={loading} />
-        {loading ? <ActivityIndicator /> : null}
-        {result ? (
-          <Text style={result.ok ? styles.ok : styles.error}>{result.message}</Text>
-        ) : null}
-      </View>
+      <Button title="Sair" onPress={handleLogout} disabled={loading} />
+      {loading ? <ActivityIndicator /> : null}
+      {error ? <Text style={styles.error}>{error}</Text> : null}
     </View>
   );
 }
@@ -67,19 +57,9 @@ const styles = StyleSheet.create({
     color: '#666',
     marginBottom: 8,
   },
-  smokeBox: {
-    marginTop: 24,
-    width: '100%',
-    gap: 12,
-    alignItems: 'center',
-  },
-  smokeTitle: {
+  email: {
     fontSize: 14,
-    color: '#888',
-  },
-  ok: {
-    color: '#1a7f37',
-    textAlign: 'center',
+    color: '#444',
   },
   error: {
     color: '#cf222e',

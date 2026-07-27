@@ -1,16 +1,51 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
+import { useAuth } from '../contexts/AuthContext';
+import { AuthScreen } from '../screens/AuthScreen';
 import { DetailsScreen } from '../screens/DetailsScreen';
 import { HomeScreen } from '../screens/HomeScreen';
-import type { RootStackParamList } from '../types/navigation';
+import type { AppStackParamList, AuthStackParamList } from '../types/navigation';
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const AuthStack = createNativeStackNavigator<AuthStackParamList>();
+const AppStack = createNativeStackNavigator<AppStackParamList>();
 
-export function RootNavigator() {
+function AuthNavigator() {
   return (
-    <Stack.Navigator>
-      <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Início' }} />
-      <Stack.Screen name="Details" component={DetailsScreen} options={{ title: 'Detalhes' }} />
-    </Stack.Navigator>
+    <AuthStack.Navigator screenOptions={{ headerShown: false }}>
+      <AuthStack.Screen name="Auth" component={AuthScreen} />
+    </AuthStack.Navigator>
   );
 }
+
+function AppNavigator() {
+  return (
+    <AppStack.Navigator>
+      <AppStack.Screen name="Home" component={HomeScreen} options={{ title: 'Início' }} />
+      <AppStack.Screen name="Details" component={DetailsScreen} options={{ title: 'Detalhes' }} />
+    </AppStack.Navigator>
+  );
+}
+
+export function RootNavigator() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  return user ? <AppNavigator /> : <AuthNavigator />;
+}
+
+const styles = StyleSheet.create({
+  loading: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+  },
+});
