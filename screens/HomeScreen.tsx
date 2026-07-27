@@ -31,6 +31,10 @@ export function HomeScreen({ navigation }: Props) {
       <Text style={styles.title}>Uber Faturamento</Text>
       <Text style={styles.subtitle}>Tela inicial (placeholder)</Text>
       {user?.email ? <Text style={styles.email}>{user.email}</Text> : null}
+      <Button
+        title="Configuração de custos"
+        onPress={() => navigation.navigate('Config')}
+      />
       <Button title="Ir para Detalhes" onPress={() => navigation.navigate('Details')} />
       <Button title="Sair" onPress={handleLogout} disabled={loading} />
       {loading ? <ActivityIndicator /> : null}

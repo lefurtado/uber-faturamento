@@ -3,6 +3,7 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import { useAuth } from '../contexts/AuthContext';
 import { AuthScreen } from '../screens/AuthScreen';
+import { ConfigScreen } from '../screens/ConfigScreen';
 import { DetailsScreen } from '../screens/DetailsScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import type { AppStackParamList, AuthStackParamList } from '../types/navigation';
@@ -22,6 +23,11 @@ function AppNavigator() {
   return (
     <AppStack.Navigator>
       <AppStack.Screen name="Home" component={HomeScreen} options={{ title: 'Início' }} />
+      <AppStack.Screen
+        name="Config"
+        component={ConfigScreen}
+        options={{ title: 'Configuração' }}
+      />
       <AppStack.Screen name="Details" component={DetailsScreen} options={{ title: 'Detalhes' }} />
     </AppStack.Navigator>
   );
