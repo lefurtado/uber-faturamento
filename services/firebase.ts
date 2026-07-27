@@ -1,7 +1,18 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
+import {
+  initializeAuth,
+  getAuth,
+  getReactNativePersistence,
+  type Auth,
+} from 'firebase/auth';
+import {
+  initializeFirestore,
+  getFirestore,
+  persistentLocalCache,
+  type Firestore,
+} from 'firebase/firestore';
 
 import type { FirebaseConfig } from '../types/firebase';
 
@@ -20,10 +31,30 @@ function getFirebaseConfig(): FirebaseConfig {
   };
 }
 
+function createAuth(firebaseApp: FirebaseApp): Auth {
+  try {
+    return initializeAuth(firebaseApp, {
+      persistence: getReactNativePersistence(AsyncStorage),
+    });
+  } catch {
+    return getAuth(firebaseApp);
+  }
+}
+
+function createFirestore(firebaseApp: FirebaseApp): Firestore {
+  try {
+    return initializeFirestore(firebaseApp, {
+      localCache: persistentLocalCache(),
+    });
+  } catch {
+    return getFirestore(firebaseApp);
+  }
+}
+
 const firebaseConfig = getFirebaseConfig();
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+export const auth = createAuth(app);
+export const db = createFirestore(app);
 export { app };
