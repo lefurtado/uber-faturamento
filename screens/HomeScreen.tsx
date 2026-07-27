@@ -32,6 +32,10 @@ export function HomeScreen({ navigation }: Props) {
       <Text style={styles.subtitle}>Tela inicial (placeholder)</Text>
       {user?.email ? <Text style={styles.email}>{user.email}</Text> : null}
       <Button
+        title="Fechar o dia"
+        onPress={() => navigation.navigate('Fechamento')}
+      />
+      <Button
         title="Configuração de custos"
         onPress={() => navigation.navigate('Config')}
       />

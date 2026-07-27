@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { AuthScreen } from '../screens/AuthScreen';
 import { ConfigScreen } from '../screens/ConfigScreen';
 import { DetailsScreen } from '../screens/DetailsScreen';
+import { FechamentoScreen } from '../screens/FechamentoScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import type { AppStackParamList, AuthStackParamList } from '../types/navigation';
 
@@ -27,6 +28,11 @@ function AppNavigator() {
         name="Config"
         component={ConfigScreen}
         options={{ title: 'Configuração' }}
+      />
+      <AppStack.Screen
+        name="Fechamento"
+        component={FechamentoScreen}
+        options={{ title: 'Fechamento' }}
       />
       <AppStack.Screen name="Details" component={DetailsScreen} options={{ title: 'Detalhes' }} />
     </AppStack.Navigator>

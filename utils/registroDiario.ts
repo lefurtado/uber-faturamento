@@ -8,6 +8,15 @@ import type {
 
 const DATA_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 
+/** Retorna a data local de hoje no formato YYYY-MM-DD. */
+export function getDataLocalHoje(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 /**
  * Valida e retorna o ID do documento de registro diário (YYYY-MM-DD).
  * O ID deve coincidir com o campo `data` do registro.
