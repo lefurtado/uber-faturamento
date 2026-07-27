@@ -5,6 +5,11 @@ import type {
   RegistroDiarioInput,
   RegistroDiarioWrite,
 } from '../types/registroDiario';
+import {
+  calcularGastoTotal,
+  calcularLucroLiquido,
+  calcularMediaRsPorKm,
+} from './calculos';
 
 const DATA_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -54,9 +59,9 @@ export function calcularCamposDerivados(
 ): Pick<RegistroDiarioDerivados, 'gastoTotal' | 'lucroLiquido' | 'mediaRsPorKm'> {
   const { faturamento, kmRodado, custoCombustivel, custoManutencao, custoSeguro } = params;
 
-  const gastoTotal = custoCombustivel + custoManutencao + custoSeguro;
-  const lucroLiquido = faturamento - gastoTotal;
-  const mediaRsPorKm = kmRodado > 0 ? faturamento / kmRodado : 0;
+  const gastoTotal = calcularGastoTotal(custoCombustivel, custoManutencao, custoSeguro);
+  const lucroLiquido = calcularLucroLiquido(faturamento, gastoTotal);
+  const mediaRsPorKm = calcularMediaRsPorKm(faturamento, kmRodado);
 
   return { gastoTotal, lucroLiquido, mediaRsPorKm };
 }

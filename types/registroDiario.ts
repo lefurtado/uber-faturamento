@@ -36,3 +36,15 @@ export type MontarRegistroDiarioParams = {
   config: UserConfig;
   timestamp: FieldValue;
 };
+
+/** Totais agregados de um conjunto de registros diários (semanal/mensal). */
+export type AgregadoPeriodo = {
+  totalFaturamento: number;
+  totalLucro: number;
+  totalGasto: number;
+  totalCustoCombustivel: number;
+  totalCustoManutencao: number;
+  totalCustoSeguro: number;
+  totalKm: number;
+  mediaRsPorKm: number;
+};

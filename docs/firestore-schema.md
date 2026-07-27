@@ -109,12 +109,17 @@ mediaRsPorKm  = kmRodado > 0 ? faturamento / kmRodado : 0
 Definidos em:
 
 - `types/user.ts` — `UserConfig`, `UserDoc`
-- `types/registroDiario.ts` — `RegistroDiario`, `RegistroDiarioInput`, payloads de leitura/escrita
+- `types/registroDiario.ts` — `RegistroDiario`, `RegistroDiarioInput`, `AgregadoPeriodo`, payloads de leitura/escrita
 
 ## Helpers
 
-- `utils/registroDiario.ts` — validação de ID, cálculo de campos derivados, montagem do documento
+- `utils/calculos.ts` — funções puras de cálculo financeiro (`calcularGastoTotal`, `calcularLucroLiquido`, `calcularMediaRsPorKm`, `agregarPeriodo`)
+- `utils/registroDiario.ts` — validação de ID, cálculo de campos derivados (via `calculos.ts`), montagem do documento
 - `services/paths.ts` — referências tipadas `userDoc(uid)` e `registroDiarioDoc(uid, data)`
+
+### Agregação de período
+
+Para totais semanais/mensais, use `agregarPeriodo(registros)` em `utils/calculos.ts`. A média R$/km do período é **recalculada** como `totalFaturamento / totalKm` — nunca como média das médias diárias. Se `totalKm === 0`, `mediaRsPorKm` retorna `0`.
 
 ---
 
