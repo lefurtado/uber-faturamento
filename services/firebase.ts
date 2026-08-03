@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
 import {
   initializeAuth,
@@ -10,6 +11,7 @@ import {
 import {
   initializeFirestore,
   getFirestore,
+  memoryLocalCache,
   persistentLocalCache,
   type Firestore,
 } from 'firebase/firestore';
@@ -42,10 +44,11 @@ function createAuth(firebaseApp: FirebaseApp): Auth {
 }
 
 function createFirestore(firebaseApp: FirebaseApp): Firestore {
+  const localCache =
+    Platform.OS === 'web' ? persistentLocalCache() : memoryLocalCache();
+
   try {
-    return initializeFirestore(firebaseApp, {
-      localCache: persistentLocalCache(),
-    });
+    return initializeFirestore(firebaseApp, { localCache });
   } catch {
     return getFirestore(firebaseApp);
   }
