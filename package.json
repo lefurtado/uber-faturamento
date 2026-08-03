@@ -24,7 +24,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "verify:calculos": "npx --yes tsx scripts/verify-calculos.ts"
+    "verify:calculos": "npx --yes tsx scripts/verify-calculos.ts",
+    "verify:intervalos": "npx --yes tsx scripts/verify-intervaloDatas.ts"
   },
   "private": true
 }

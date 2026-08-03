@@ -115,7 +115,21 @@ Definidos em:
 
 - `utils/calculos.ts` — funções puras de cálculo financeiro (`calcularGastoTotal`, `calcularLucroLiquido`, `calcularMediaRsPorKm`, `agregarPeriodo`)
 - `utils/registroDiario.ts` — validação de ID, cálculo de campos derivados (via `calculos.ts`), montagem do documento
-- `services/paths.ts` — referências tipadas `userDoc(uid)` e `registroDiarioDoc(uid, data)`
+- `utils/intervaloDatas.ts` — intervalos de datas locais (`getIntervaloSemanaAtual`, `getIntervaloMesAtual`, `getIntervaloMesEspecifico`); semana = segunda→domingo; mês = dia 1º→último dia
+- `services/paths.ts` — referências tipadas `userDoc(uid)`, `registroDiarioDoc(uid, data)` e `registrosDiariosCollection(uid)`
+- `services/registroDiario.ts` — CRUD unitário (`getRegistroDiario`, `saveRegistroDiario`) e query por período (`buscarRegistrosPorPeriodo`)
+
+### Query por período
+
+`buscarRegistrosPorPeriodo(uid, dataInicio, dataFim)` consulta `registrosDiarios` com:
+
+```
+where("data", ">=", dataInicio)
+where("data", "<=", dataFim)
+orderBy("data")
+```
+
+Retorna `RegistroDiario[]` tipado (documentos inválidos são descartados). Use os helpers de `utils/intervaloDatas.ts` para obter `dataInicio`/`dataFim`.
 
 ### Agregação de período
 

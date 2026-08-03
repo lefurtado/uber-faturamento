@@ -1,9 +1,17 @@
-import { getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
+import {
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+  serverTimestamp,
+  setDoc,
+  where,
+} from 'firebase/firestore';
 
 import type { RegistroDiario, RegistroDiarioInput } from '../types/registroDiario';
 import type { UserConfig } from '../types/user';
-import { montarRegistroDiario } from '../utils/registroDiario';
-import { registroDiarioDoc } from './paths';
+import { buildRegistroDiarioId, montarRegistroDiario } from '../utils/registroDiario';
+import { registroDiarioDoc, registrosDiariosCollection } from './paths';
 
 function isRegistroDiario(value: unknown): value is RegistroDiario {
   if (!value || typeof value !== 'object') {
@@ -52,6 +60,44 @@ export async function saveRegistroDiario(
   });
 
   await setDoc(registroDiarioDoc(uid, input.data), payload);
+}
+
+/**
+ * Busca registros diários do usuário no intervalo [dataInicio, dataFim] (YYYY-MM-DD).
+ * Ordenados por `data` ascendente. Documentos inválidos são descartados.
+ */
+export async function buscarRegistrosPorPeriodo(
+  uid: string,
+  dataInicio: string,
+  dataFim: string,
+): Promise<RegistroDiario[]> {
+  const inicio = buildRegistroDiarioId(dataInicio);
+  const fim = buildRegistroDiarioId(dataFim);
+
+  if (inicio > fim) {
+    throw new Error(
+      `Intervalo inválido: dataInicio ("${inicio}") deve ser <= dataFim ("${fim}").`,
+    );
+  }
+
+  const q = query(
+    registrosDiariosCollection(uid),
+    where('data', '>=', inicio),
+    where('data', '<=', fim),
+    orderBy('data'),
+  );
+
+  const snapshot = await getDocs(q);
+  const registros: RegistroDiario[] = [];
+
+  for (const docSnap of snapshot.docs) {
+    const registro = docSnap.data();
+    if (isRegistroDiario(registro)) {
+      registros.push(registro);
+    }
+  }
+
+  return registros;
 }
 
 const FIRESTORE_ERROR_MESSAGES: Record<string, string> = {
